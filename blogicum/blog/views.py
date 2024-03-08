@@ -31,11 +31,16 @@ def index(request):
 
 def post_detail(request, post_id):
     template = 'blog/detail.html'
-    post = get_object_or_404(Post, id=post_id, is_published=True)
-    comments = post.comments.all().order_by('pub_date')
+    post = get_object_or_404(Post, id=post_id)
+    if post.is_published is False and request.user.id == post.author_id:
+        post_to_render = post
+    else:
+        post_to_render = get_object_or_404(
+            Post, id=post_id, is_published=True)
+    comments = post_to_render.comments.all().order_by('pub_date')
     form = CommentForm()
     context = {
-        'post': post,
+        'post': post_to_render,
         'comments': comments,
         'form': form,
     }
