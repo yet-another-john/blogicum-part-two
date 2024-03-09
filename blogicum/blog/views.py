@@ -31,12 +31,18 @@ def index(request):
 
 def post_detail(request, post_id):
     template = 'blog/detail.html'
+    current_time = timezone.now()
     post = get_object_or_404(Post, id=post_id)
-    if post.is_published is False and request.user.id == post.author_id:
+    if request.user.id == post.author_id:
         post_to_render = post
     else:
         post_to_render = get_object_or_404(
-            Post, id=post_id, is_published=True)
+            Post,
+            id=post_id,
+            is_published=True,
+            category__is_published=True,
+            pub_date__lte=current_time
+        )
     comments = post_to_render.comments.all().order_by('pub_date')
     form = CommentForm()
     context = {
@@ -143,7 +149,6 @@ def edit_comment(request, post_id, comment_id):
         post=post,
         author=request.user
     )
-
     if request.method == 'POST':
         form = CommentForm(request.POST or None, instance=comment)
         if form.is_valid():
@@ -151,7 +156,6 @@ def edit_comment(request, post_id, comment_id):
             return redirect('blog:post_detail', post_id)
     else:
         form = CommentForm(instance=comment)
-
     context = {
         'form': form,
         'post': post,
@@ -172,7 +176,7 @@ def delete_comment(request, post_id, comment_id):
     )
     if request.method == 'POST':
         comment.delete()
-        return redirect('blog:post_detail', id=post_id)
+        return redirect('blog:post_detail', post_id)
     context = {
         'post': post,
         'comment': comment,
