@@ -12,7 +12,10 @@ class CommentForm(forms.ModelForm):
 class PostForm(forms.ModelForm):
     class Meta:
         model = Post
-        fields = ['title', 'text', 'pub_date', 'category', 'location', 'image']
+        exclude = ("author",)
+        widgets = {
+            'pub_date': forms.DateInput(attrs={'type': 'date'})
+        }
 
 
 class ProfileForm(forms.ModelForm):

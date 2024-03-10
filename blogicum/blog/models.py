@@ -88,21 +88,27 @@ class Post(AbstractModel):
 
 
 class Comment(models.Model):
-    text = models.TextField()
+    text = models.TextField('Комментарий')
     post = models.ForeignKey(
         Post,
         on_delete=models.CASCADE,
-        related_name='comments'
+        related_name='comments',
+        verbose_name='Публикация'
     )
     author = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
         verbose_name='Автор комментария'
     )
-    pub_date = models.DateTimeField(auto_now_add=True)
+    pub_date = models.DateTimeField(
+        auto_now_add=True,
+        verbose_name='Дата публикации'
+    )
 
     class Meta:
         ordering = ['pub_date']
+        verbose_name = 'комментарий'
+        verbose_name_plural = 'Комментарий'
 
     def __str__(self):
         sliced_text = self.text[:20]

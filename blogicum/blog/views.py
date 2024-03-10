@@ -2,9 +2,10 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.core.paginator import Paginator
 from django.shortcuts import get_object_or_404, redirect, render
-from .forms import CommentForm, PostForm, ProfileForm
-from .models import Category, Comment, Post
 from django.utils import timezone
+
+from .models import Category, Comment, Post
+from .forms import CommentForm, PostForm, ProfileForm
 
 
 PAGINATOR_NUMBER = 10
@@ -68,7 +69,7 @@ def category_posts(request, category_slug):
         )
         .order_by('-pub_date')
     )
-    posts_per_page = 10
+    posts_per_page = PAGINATOR_NUMBER
     paginator = Paginator(post_list, posts_per_page)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
